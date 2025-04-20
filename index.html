@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>حاسبة الأرباح الذكية</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: #f0f2f5;
+      direction: rtl;
+      padding: 30px;
+      margin: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #00bfa6;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 4px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      background: #00bfa6;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .results {
+      margin-top: 25px;
+      background: #e8fdfb;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .results p {
+      margin: 8px 0;
+    }
+    #printBtn, #pdfBtn {
+      background-color: #333;
+      margin-top: 10px;
+    }
+    .profit { color: green; font-weight: bold; }
+    .loss { color: red; font-weight: bold; }
+    @media (max-width: 768px) {
+      body { padding: 15px; }
+      .container { padding: 20px; }
+      h2 { font-size: 20px; }
+      input, select, button { font-size: 14px; padding: 8px; }
+      label, .results p { font-size: 14px; }
+    }
+    @media (max-width: 480px) {
+      h2 { font-size: 18px; }
+      input, select, button { font-size: 13px; }
+      .container { padding: 15px; }
+      .results p { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="calculator">
+    <h2>حاسبة الأرباح الذكية</h2>
+    <label>البلد والعملة:</label>
+    <select id="countryCurrency">
+      <option value="ريال سعودي">السعودية - ريال سعودي</option>
+      <option value="درهم إماراتي">الإمارات - درهم إماراتي</option>
+      <option value="جنيه مصري">مصر - جنيه مصري</option>
+      <option value="دينار أردني">الأردن - دينار أردني</option>
+      <option value="دينار كويتي">الكويت - دينار كويتي</option>
+      <option value="دينار بحريني">البحرين - دينار بحريني</option>
+      <option value="ريال قطري">قطر - ريال قطري</option>
+      <option value="ريال عماني">عُمان - ريال عماني</option>
+      <option value="درهم مغربي">المغرب - درهم مغربي</option>
+      <option value="دينار جزائري">الجزائر - دينار جزائري</option>
+      <option value="دينار تونسي">تونس - دينار تونسي</option>
+      <option value="فرنك جيبوتي">جيبوتي - فرنك جيبوتي</option>
+      <option value="دينار ليبي">ليبيا - دينار ليبي</option>
+      <option value="أوقية موريتانية">موريتانيا - أوقية موريتانية</option>
+      <option value="جنيه سوداني">السودان - جنيه سوداني</option>
+      <option value="ليرة سورية">سوريا - ليرة سورية</option>
+      <option value="شلن صومالي">الصومال - شلن صومالي</option>
+      <option value="دينار عراقي">العراق - دينار عراقي</option>
+      <option value="ريال يمني">اليمن - ريال يمني</option>
+      <option value="دولار أمريكي">USA - USD</option>
+      <option value="يورو">أوروبا - يورو</option>
+    </select>
+    <label>تكلفة المنتج:</label>
+    <input type="number" id="cost" placeholder="مثال: 50">
+    <label>سعر البيع:</label>
+    <input type="number" id="price" placeholder="مثال: 120">
+    <label>تكلفة الإعلان:</label>
+    <input type="number" id="ads" value="0">
+    <label>الشحن:</label>
+    <input type="number" id="shipping" value="0">
+    <label>عمولة المنصة (%):</label>
+    <input type="number" id="commission" value="0">
+    <label>نسبة الخصومات (%):</label>
+    <input type="number" id="discount" value="0">
+    <label>نسبة الضرائب (%):</label>
+    <input type="number" id="tax" value="0">
+    <label>عدد المبيعات شهرياً:</label>
+    <input type="number" id="salesCount" value="0">
+    <label>عدد المرتجعات:</label>
+    <input type="number" id="returnCountInput" value="0">
+    <button onclick="calculate()">احسب الآن</button>
+    <div class="results" id="results" style="display:none;">
+      <p><strong>الشهر الحالي:</strong> <span id="monthName"></span></p>
+      <p><strong>صافي الربح:</strong> <span id="netProfit"></span></p>
+      <p><strong>نسبة الربح:</strong> <span id="profitRate"></span>%</p>
+      <p><strong>الربح الشهري:</strong> <span id="monthlyProfit"></span></p>
+      <p><strong>نسبة المرتجعات:</strong> <span id="returnRate"></span>%</p>
+      <hr>
+      <p><strong>لتحقيق ربح 20%، يجب أن يكون السعر:</strong> <span id="suggest20"></span></p>
+      <p><strong>لتحقيق ربح 30%، يجب أن يكون السعر:</strong> <span id="suggest30"></span></p>
+      <p><strong>لتحقيق ربح 40%، يجب أن يكون السعر:</strong> <span id="suggest40"></span></p>
+      <p><strong>لتحقيق ربح 50%، يجب أن يكون السعر:</strong> <span id="suggest50"></span></p>
+      <p><strong>لتحقيق ربح 60%، يجب أن يكون السعر:</strong> <span id="suggest60"></span></p>
+      <p><strong>لتحقيق ربح 70%، يجب أن يكون السعر:</strong> <span id="suggest70"></span></p>
+      <p><strong>لتحقيق ربح 80%، يجب أن يكون السعر:</strong> <span id="suggest80"></span></p>
+      <p><strong>لتحقيق ربح 90%، يجب أن يكون السعر:</strong> <span id="suggest90"></span></p>
+      <button id="printBtn" onclick="window.print()">طباعة التقرير</button>
+      <button id="pdfBtn" onclick="generatePDF()">تحميل PDF</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    function calculate() {
+      const cost = parseFloat(document.getElementById('cost').value) || 0;
+      const price = parseFloat(document.getElementById('price').value) || 0;
+      const ads = parseFloat(document.getElementById('ads').value) || 0;
+      const shipping = parseFloat(document.getElementById('shipping').value) || 0;
+      const commission = parseFloat(document.getElementById('commission').value) || 0;
+      const discount = parseFloat(document.getElementById('discount').value) || 0;
+      const tax = parseFloat(document.getElementById('tax').value) || 0;
+      const sales = parseInt(document.getElementById('salesCount').value) || 0;
+      const returnCountInput = parseFloat(document.getElementById('returnCountInput').value) || 0;
+      const currency = document.getElementById("countryCurrency").value;
+
+      const commissionCost = price * (commission / 100);
+      const discountCost = price * (discount / 100);
+      const taxCost = price * (tax / 100);
+      const returnRate = (sales > 0) ? (returnCountInput / sales) * 100 : 0;
+      const returnCost = returnCountInput * cost;
+
+      const totalCost = cost + ads + shipping + commissionCost + discountCost + taxCost;
+      const netProfit = price - (totalCost + (returnCost / sales || 0));
+      const profitRate = ((netProfit / price) * 100).toFixed(1);
+      const monthlyProfit = (netProfit * sales).toFixed(2);
+
+      const suggestBase = totalCost + (returnCost / sales || 0);
+      const suggestPrice = pct => (suggestBase / (1 - pct)).toFixed(2) + " " + currency;
+
+      const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+      document.getElementById("monthName").textContent = monthNames[new Date().getMonth()];
+
+      const netProfitEl = document.getElementById("netProfit");
+      if (netProfit >= 0) {
+        netProfitEl.textContent = netProfit.toFixed(2) + " " + currency + " (ربح)";
+        netProfitEl.className = "profit";
+      } else {
+        netProfitEl.textContent = netProfit.toFixed(2) + " " + currency + " (خسارة)";
+        netProfitEl.className = "loss";
+      }
+
+      document.getElementById("profitRate").textContent = profitRate;
+      document.getElementById("monthlyProfit").textContent = monthlyProfit;
+      document.getElementById("returnRate").textContent = returnRate.toFixed(2);
+
+      document.getElementById("suggest20").textContent = suggestPrice(0.2);
+      document.getElementById("suggest30").textContent = suggestPrice(0.3);
+      document.getElementById("suggest40").textContent = suggestPrice(0.4);
+      document.getElementById("suggest50").textContent = suggestPrice(0.5);
+      document.getElementById("suggest60").textContent = suggestPrice(0.6);
+      document.getElementById("suggest70").textContent = suggestPrice(0.7);
+      document.getElementById("suggest80").textContent = suggestPrice(0.8);
+      document.getElementById("suggest90").textContent = suggestPrice(0.9);
+
+      document.getElementById("results").style.display = "block";
+    }
+
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const element = document.getElementById("results");
+
+      await html2canvas(element).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        const imgProps = doc.getImageProperties(imgData);
+        const pdfWidth = doc.internal.pageSize.getWidth();
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        doc.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+        doc.save("profit-report.pdf");
+      });
+    }
+  </script>
+</body>
+</html>
